@@ -1,51 +1,73 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Norivo - Identyfikatory NFC dla pupili</title>
-    <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Norivo - Identyfikatory NFC</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <header>
-        <div class="logo">🐾 Norivo</div>
-        <nav>
-            <a href="#">Sklep</a>
-            <a href="#">O nas</a>
-            <a href="#">Kontakt</a>
-        </nav>
-    </header>
+  <div id="admin-bar" style="display: none; background: #222; color: white; padding: 10px; text-align: center;">
+    Tryb edycji administratora aktywny | <button onclick="saveContent()">💾 Zapisz zmiany</button>
+  </div>
 
-    <section class="hero">
-        <h1>Stylowe i bezpieczne identyfikatory NFC dla Twojego pupila</h1>
-        <p>Zadbaj o bezpieczeństwo swojego zwierzaka z Norivo.</p>
-        <div class="buttons">
-            <a href="r.html?id=abc123" class="btn">Sprawdź profil demo</a>
-            <a href="#" class="btn secondary">Zamów brelok</a>
-        </div>
-    </section>
+  <section class="hero">
+    <h1 contenteditable="false" data-section="hero-title">Stylowe i bezpieczne identyfikatory NFC dla Twojego pupila</h1>
+    <p contenteditable="false" data-section="hero-sub">Zadbaj o bezpieczeństwo swojego zwierzaka z Norivo.</p>
+  </section>
 
-    <section class="features">
-        <h2>Dlaczego Norivo?</h2>
-        <div class="feature-grid">
-            <div><h3>🔒 Bezpieczeństwo</h3><p>Twój pupil zawsze znajdzie drogę do domu.</p></div>
-            <div><h3>🎨 Personalizacja</h3><p>Imię, zdjęcie i dane właściciela.</p></div>
-            <div><h3>🔁 Elastyczność</h3><p>Edycja danych w dowolnym momencie.</p></div>
-        </div>
-    </section>
+  <section class="features">
+    <h2 contenteditable="false" data-section="features-title">Dlaczego Norivo?</h2>
+    <div class="feature-grid">
+      <div><h3 contenteditable="false" data-section="feature1-title">🔒 Bezpieczeństwo</h3>
+      <p contenteditable="false" data-section="feature1-desc">Twój pupil zawsze znajdzie drogę do domu.</p></div>
+      <div><h3 contenteditable="false" data-section="feature2-title">🎨 Personalizacja</h3>
+      <p contenteditable="false" data-section="feature2-desc">Imię, zdjęcie i dane właściciela.</p></div>
+      <div><h3 contenteditable="false" data-section="feature3-title">🔁 Elastyczność</h3>
+      <p contenteditable="false" data-section="feature3-desc">Edycja danych w dowolnym momencie.</p></div>
+    </div>
+  </section>
 
-    <section class="products">
-        <h2>Przykładowe identyfikatory</h2>
-        <div class="product-grid">
-            <div class="product"><div class="img-placeholder"></div><p>Model klasyczny</p></div>
-            <div class="product"><div class="img-placeholder"></div><p>Model pastelowy</p></div>
-            <div class="product"><div class="img-placeholder"></div><p>Model premium</p></div>
-        </div>
-    </section>
+  <section class="products">
+    <h2 contenteditable="false" data-section="products-title">Przykładowe identyfikatory</h2>
+    <div class="product-grid">
+      <div class="product"><div class="img-placeholder"></div><p contenteditable="false" data-section="product1">Model klasyczny</p></div>
+      <div class="product"><div class="img-placeholder"></div><p contenteditable="false" data-section="product2">Model pastelowy</p></div>
+      <div class="product"><div class="img-placeholder"></div><p contenteditable="false" data-section="product3">Model premium</p></div>
+    </div>
+  </section>
 
-    <footer>
-        <p>© 2025 Norivo. Wszelkie prawa zastrzeżone.</p>
-        <p>Kontakt: kontakt@norivo.fun</p>
-    </footer>
+  <footer>
+    <p contenteditable="false" data-section="footer-text">© 2025 Norivo. Wszelkie prawa zastrzeżone.</p>
+    <p contenteditable="false" data-section="footer-email">Kontakt: kontakt@norivo.fun</p>
+  </footer>
+
+  <script>
+    const adminPassword = "norivo123";
+    let isAdmin = false;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const pass = prompt("Wpisz hasło administratora:");
+      if (pass === adminPassword) {
+        isAdmin = true;
+        document.getElementById("admin-bar").style.display = "block";
+        document.querySelectorAll("[contenteditable]").forEach(el => {
+          el.setAttribute("contenteditable", "true");
+          el.style.border = "1px dashed #aaa";
+          el.style.padding = "4px";
+        });
+      }
+    });
+
+    function saveContent() {
+      const data = {};
+      document.querySelectorAll("[data-section]").forEach(el => {
+        const key = el.getAttribute("data-section");
+        data[key] = el.innerText.trim();
+      });
+      console.log("Zapisane dane:", data);
+      alert("Zapisano zmiany (symulacja). Wersja z bazą danych Supabase w kolejnym kroku.");
+    }
+  </script>
 </body>
 </html>
