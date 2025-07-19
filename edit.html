@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <title>Edytuj dane</title>
+  <title>Edytuj dane pupila</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
 </head>
@@ -13,6 +13,8 @@
     <label>Imię właściciela: <input type="text" id="owner_name" /></label><br>
     <label>Telefon: <input type="text" id="phone" /></label><br>
     <label>Adres: <input type="text" id="address" /></label><br>
+    <label>Zdjęcie pupila: <input type="file" id="photo" accept="image/*" /></label><br>
+    <img id="preview" src="" alt="" style="max-width:200px;display:none;margin:1em auto;" />
     <button type="submit">Zapisz</button>
   </form>
   <p><a href="index.html">⬅️ Wróć na stronę główną</a></p>
@@ -20,8 +22,9 @@
   <script>
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id");
-
     const form = document.getElementById("editForm");
+
+    let currentPhotoUrl = "";
 
     client.from("pets").select("*").eq("id", id).single().then(({ data }) => {
       if (data) {
@@ -29,20 +32,43 @@
         document.getElementById("owner_name").value = data.owner_name;
         document.getElementById("phone").value = data.phone;
         document.getElementById("address").value = data.address;
+        if (data.photo_url) {
+          document.getElementById("preview").src = data.photo_url;
+          document.getElementById("preview").style.display = "block";
+          currentPhotoUrl = data.photo_url;
+        }
       }
     });
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+
+      let photo_url = currentPhotoUrl;
+      const file = document.getElementById("photo").files[0];
+      if (file) {
+        const fileName = `${id}_${file.name}`;
+        const { data, error } = await client.storage.from("photos").upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
+        if (!error) {
+          const { data: urlData } = client.storage.from("photos").getPublicUrl(fileName);
+          photo_url = urlData.publicUrl;
+        }
+      }
+
       const updates = {
         pet_name: document.getElementById("pet_name").value,
         owner_name: document.getElementById("owner_name").value,
         phone: document.getElementById("phone").value,
         address: document.getElementById("address").value,
+        photo_url,
         updated_at: new Date().toISOString()
       };
+
       await client.from("pets").update(updates).eq("id", id);
       alert("Dane zostały zapisane!");
+      location.reload();
     });
   </script>
 </body>

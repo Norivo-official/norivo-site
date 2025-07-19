@@ -8,6 +8,7 @@
 </head>
 <body>
   <h1 id="pet_name">Wczytywanie...</h1>
+  <img id="photo" src="" alt="" style="max-width:300px;display:none;" />
   <p>Właściciel: <span id="owner_name"></span></p>
   <p>Telefon: <span id="phone"></span></p>
   <p>Adres: <span id="address"></span></p>
@@ -26,6 +27,11 @@
       document.getElementById("owner_name").innerText = data.owner_name;
       document.getElementById("phone").innerText = data.phone;
       document.getElementById("address").innerText = data.address;
+      if (data.photo_url) {
+        const img = document.getElementById("photo");
+        img.src = data.photo_url;
+        img.style.display = "block";
+      }
     });
   </script>
 </body>
