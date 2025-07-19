@@ -1,21 +1,93 @@
 body {
+    margin: 0;
     font-family: sans-serif;
-    text-align: center;
-    padding: 2rem;
-    background-color: #fff4e6;
+    color: #333;
+    background-color: #fdfaf7;
 }
+
 header {
-    background: white;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    max-width: 700px;
-    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
 }
+
 .logo {
-    width: 180px;
-    height: auto;
-    margin-bottom: 1rem;
-    pointer-events: none;
-    user-select: none;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+nav a {
+    margin-left: 15px;
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+}
+
+.hero {
+    padding: 50px 20px;
+    text-align: center;
+    background: linear-gradient(180deg, #fff6eb, #fff);
+}
+
+.hero h1 {
+    font-size: 2em;
+    margin-bottom: 0.5em;
+}
+
+.hero p {
+    margin-bottom: 1em;
+}
+
+.buttons .btn {
+    padding: 10px 20px;
+    margin: 5px;
+    text-decoration: none;
+    border-radius: 8px;
+    background-color: #f48c06;
+    color: white;
+    font-weight: bold;
+}
+
+.buttons .btn.secondary {
+    background-color: #6c757d;
+}
+
+.features, .products {
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.feature-grid, .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.product {
+    background: #fff;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 0 6px rgba(0,0,0,0.05);
+}
+
+.img-placeholder {
+    background-color: #eee;
+    height: 120px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+footer {
+    background-color: #fff;
+    text-align: center;
+    padding: 20px;
+    font-size: 0.9em;
+    margin-top: 40px;
+    border-top: 1px solid #eee;
 }
