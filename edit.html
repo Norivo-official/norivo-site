@@ -1,91 +1,102 @@
+
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <title>Edytuj dane pupila</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase.js"></script>
+    <meta charset="UTF-8">
+    <title>Edytuj dane pupila</title>
 </head>
 <body>
-  <h1>Edytuj dane pupila</h1>
-  <form id="editForm">
-    <label>Imię pupila: <input type="text" id="pet_name" /></label><br>
-    <label>Imię właściciela: <input type="text" id="owner_name" /></label><br>
-    <label>Telefon: <input type="text" id="phone" /></label><br>
-    <label>Adres: <input type="text" id="address" /></label><br>
-    <label>Zdjęcie pupila: <input type="file" id="photo" accept="image/*" /></label><br>
-    <img id="preview" src="" alt="" style="max-width:200px;display:none;margin:1em auto;" />
-    <button type="submit">Zapisz</button>
-  </form>
-  <p><a href="index.html">⬅️ Wróć na stronę główną</a></p>
-  <div id="status" style="color: red; margin-top: 1em;"></div>
+    <h1>Edytuj dane pupila</h1>
+    <form id="editForm">
+        <p>Imię pupila: <input type="text" id="pet_name" name="pet_name"></p>
+        <p>Imię właściciela: <input type="text" id="owner_name" name="owner_name"></p>
+        <p>Telefon: <input type="text" id="phone" name="phone"></p>
+        <p>Adres: <input type="text" id="address" name="address"></p>
+        <p>Zdjęcie pupila: <input type="file" id="photo" name="photo"></p>
+        <button type="submit">Zapisz</button>
+    </form>
+    <p><a href="index.html">🔙 Wróć na stronę główną</a></p>
+    <div id="status" style="color: red; margin-top: 1em;"></div>
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get("id");
-    const form = document.getElementById("editForm");
-    const statusDiv = document.getElementById("status");
+        const supabaseUrl = 'https://xqlxotxeuadglvgdqral.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxbHhvdHhldWFkZ2x2Z2RxcmFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDM5NTUsImV4cCI6MjA2ODQ3OTk1NX0.a7mW1MQtr2dWL4_pgflGNpp5xVRc8Th7B0L6iiiFghw';
+        const supabase = createClient(supabaseUrl, supabaseKey);
 
-    let currentPhotoUrl = "";
+        const id = new URLSearchParams(window.location.search).get("id");
+        const form = document.getElementById("editForm");
+        const status = document.getElementById("status");
 
-    client.from("pets").select("*").eq("id", id).single().then(({ data }) => {
-      if (data) {
-        document.getElementById("pet_name").value = data.pet_name;
-        document.getElementById("owner_name").value = data.owner_name;
-        document.getElementById("phone").value = data.phone;
-        document.getElementById("address").value = data.address;
-        if (data.photo_url) {
-          document.getElementById("preview").src = data.photo_url;
-          document.getElementById("preview").style.display = "block";
-          currentPhotoUrl = data.photo_url;
+        async function fetchData() {
+            const { data, error } = await supabase.from("pets").select("*").eq("id", id).single();
+            if (error) {
+                status.textContent = "Błąd ładowania danych.";
+                return;
+            }
+            document.getElementById("pet_name").value = data.pet_name || "";
+            document.getElementById("owner_name").value = data.owner_name || "";
+            document.getElementById("phone").value = data.phone || "";
+            document.getElementById("address").value = data.address || "";
         }
-      }
-    });
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      statusDiv.innerText = "Zapisywanie...";
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const pet_name = document.getElementById("pet_name").value;
+            const owner_name = document.getElementById("owner_name").value;
+            const phone = document.getElementById("phone").value;
+            const address = document.getElementById("address").value;
+            const photoInput = document.getElementById("photo");
+            let photo_url = null;
 
-      let photo_url = currentPhotoUrl;
-      const file = document.getElementById("photo").files[0];
-      if (file) {
-        const fileName = `${id}_${file.name}`;
-        console.log("Próba przesłania pliku:", fileName);
-        const { data, error } = await client.storage.from("photos").upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: true
+            if (photoInput.files.length > 0) {
+                const file = photoInput.files[0];
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${id}.${fileExt}`;
+                const filePath = `${fileName}`;
+
+                console.log("Uploading image to Supabase Storage...");
+
+                const { error: uploadError } = await supabase.storage
+                    .from('photos')
+                    .upload(filePath, file, {
+                        cacheControl: '3600',
+                        upsert: true
+                    });
+
+                if (uploadError) {
+                    console.error("Upload error:", uploadError.message);
+                    status.textContent = "Nie udało się przesłać zdjęcia.";
+                    return;
+                }
+
+                const { data } = supabase.storage.from('photos').getPublicUrl(filePath);
+                photo_url = data.publicUrl;
+                console.log("Photo uploaded, public URL:", photo_url);
+            }
+
+            const updates = {
+                pet_name,
+                owner_name,
+                phone,
+                address,
+                updated_at: new Date().toISOString()
+            };
+            if (photo_url) updates.photo_url = photo_url;
+
+            const { error } = await supabase.from("pets").update(updates).eq("id", id);
+
+            if (error) {
+                console.error("Update error:", error.message);
+                status.textContent = "Błąd zapisu danych.";
+            } else {
+                status.style.color = "green";
+                status.textContent = "Dane zostały zapisane.";
+                document.getElementById("photo").value = "";
+            }
         });
 
-        if (error) {
-          console.error("Błąd przesyłania pliku:", error);
-          statusDiv.innerText = "Błąd podczas przesyłania pliku: " + error.message;
-          return;
-        }
-
-        const { data: urlData } = client.storage.from("photos").getPublicUrl(fileName);
-        photo_url = urlData.publicUrl;
-        console.log("URL zdjęcia:", photo_url);
-      }
-
-      const updates = {
-        pet_name: document.getElementById("pet_name").value,
-        owner_name: document.getElementById("owner_name").value,
-        phone: document.getElementById("phone").value,
-        address: document.getElementById("address").value,
-        photo_url,
-        updated_at: new Date().toISOString()
-      };
-
-      const { error: updateError } = await client.from("pets").update(updates).eq("id", id);
-      if (updateError) {
-        console.error("Błąd zapisu danych:", updateError);
-        statusDiv.innerText = "Błąd zapisu danych: " + updateError.message;
-        return;
-      }
-
-      statusDiv.innerText = "Dane zostały zapisane!";
-      location.reload();
-    });
-  </script>
+        fetchData();
+    </script>
 </body>
 </html>
