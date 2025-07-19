@@ -5,13 +5,32 @@
   <title>Profil pupila</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 2em;
+    }
+    img#photo {
+      max-width: 300px;
+      border-radius: 1em;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      margin-bottom: 1em;
+    }
+    .info {
+      font-size: 1.2em;
+      margin: 0.3em 0;
+    }
+  </style>
 </head>
 <body>
-  <h1 id="pet_name">Wczytywanie...</h1>
-  <img id="photo" src="" alt="" style="max-width:300px;display:none;" />
-  <p>Właściciel: <span id="owner_name"></span></p>
-  <p>Telefon: <span id="phone"></span></p>
-  <p>Adres: <span id="address"></span></p>
+  <div id="profile">
+    <img id="photo" src="" alt="Zdjęcie pupila" style="display:none;" />
+    <h1 id="pet_name">Wczytywanie...</h1>
+    <p class="info">Właściciel: <span id="owner_name"></span></p>
+    <p class="info">Telefon: <span id="phone"></span></p>
+    <p class="info">Adres: <span id="address"></span></p>
+  </div>
   <p><a href="index.html">⬅️ Wróć na stronę główną</a></p>
 
   <script>
@@ -23,10 +42,12 @@
         document.body.innerHTML = "<h1>Nie znaleziono profilu</h1>";
         return;
       }
-      document.getElementById("pet_name").innerText = data.pet_name + " 🐾";
+
+      document.getElementById("pet_name").innerText = data.pet_name;
       document.getElementById("owner_name").innerText = data.owner_name;
       document.getElementById("phone").innerText = data.phone;
       document.getElementById("address").innerText = data.address;
+
       if (data.photo_url) {
         const img = document.getElementById("photo");
         img.src = data.photo_url;
