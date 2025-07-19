@@ -1,59 +1,44 @@
+
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <title>Profil pupila</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase.js"></script>
-  <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      padding: 2em;
-    }
-    img#photo {
-      max-width: 300px;
-      border-radius: 1em;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
-      margin-bottom: 1em;
-    }
-    .info {
-      font-size: 1.2em;
-      margin: 0.3em 0;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <title>Profil Pupila</title>
 </head>
 <body>
-  <div id="profile">
-    <img id="photo" src="" alt="Zdjęcie pupila" style="display:none;" />
-    <h1 id="pet_name">Wczytywanie...</h1>
-    <p class="info">Właściciel: <span id="owner_name"></span></p>
-    <p class="info">Telefon: <span id="phone"></span></p>
-    <p class="info">Adres: <span id="address"></span></p>
-  </div>
-  <p><a href="index.html">⬅️ Wróć na stronę główną</a></p>
+    <div class="pet-profile">
+        <img id="pet-photo" src="" alt="Zdjęcie pupila" style="max-width: 100%; border-radius: 1rem; margin-bottom: 1rem;" />
+        <h2 id="pet-name">Imię pupila</h2>
+        <p><strong>Właściciel:</strong> <span id="owner-name"></span></p>
+        <p><strong>Telefon:</strong> <span id="phone"></span></p>
+        <p><strong>Adres:</strong> <span id="address"></span></p>
+    </div>
 
-  <script>
+    <script>
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id");
 
-    client.from("pets").select("*").eq("id", id).single().then(({ data, error }) => {
-      if (error || !data) {
-        document.body.innerHTML = "<h1>Nie znaleziono profilu</h1>";
-        return;
-      }
-
-      document.getElementById("pet_name").innerText = data.pet_name;
-      document.getElementById("owner_name").innerText = data.owner_name;
-      document.getElementById("phone").innerText = data.phone;
-      document.getElementById("address").innerText = data.address;
-
-      if (data.photo_url) {
-        const img = document.getElementById("photo");
-        img.src = data.photo_url;
-        img.style.display = "block";
-      }
+    fetch("https://xqlxotxeuadglvgdqral.supabase.co/rest/v1/pets?id=eq." + id, {
+        headers: {
+            apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxbHhvdHhldWFkZ2x2Z2RxcmFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDM5NTUsImV4cCI6MjA2ODQ3OTk1NX0.a7mW1MQtr2dWL4_pgflGNpp5xVRc8Th7B0L6iiiFghw",
+            "Content-Type": "application/json"
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.length > 0) {
+            const pet = data[0];
+            document.getElementById("pet-name").textContent = pet.pet_name;
+            document.getElementById("owner-name").textContent = pet.owner_name;
+            document.getElementById("phone").textContent = pet.phone;
+            document.getElementById("address").textContent = pet.address;
+            if (pet.photo_url) {
+                document.getElementById("pet-photo").src = pet.photo_url;
+            }
+        } else {
+            document.body.innerHTML = "<p>Nie znaleziono profilu.</p>";
+        }
     });
-  </script>
+    </script>
 </body>
 </html>
