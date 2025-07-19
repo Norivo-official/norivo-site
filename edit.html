@@ -1,19 +1,49 @@
-
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <title>Edytuj dane</title>
+  <meta charset="UTF-8" />
+  <title>Edytuj dane</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
 </head>
 <body>
-    <h1>Panel edycji</h1>
-    <form>
-        <label>Imię pupila: <input type="text" value="Tofik"></label><br>
-        <label>Imię właściciela: <input type="text" value="Jan Kowalski"></label><br>
-        <label>Telefon: <input type="tel" value="123456789"></label><br>
-        <label>Adres: <input type="text" value="ul. Psia 7, Warszawa"></label><br>
-        <button type="submit">Zapisz</button>
-    </form>
-    <p><a href="index.html">⬅️ Wróć na stronę główną</a></p>
+  <h1>Edytuj dane pupila</h1>
+  <form id="editForm">
+    <label>Imię pupila: <input type="text" id="pet_name" /></label><br>
+    <label>Imię właściciela: <input type="text" id="owner_name" /></label><br>
+    <label>Telefon: <input type="text" id="phone" /></label><br>
+    <label>Adres: <input type="text" id="address" /></label><br>
+    <button type="submit">Zapisz</button>
+  </form>
+  <p><a href="index.html">⬅️ Wróć na stronę główną</a></p>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+
+    const form = document.getElementById("editForm");
+
+    client.from("pets").select("*").eq("id", id).single().then(({ data }) => {
+      if (data) {
+        document.getElementById("pet_name").value = data.pet_name;
+        document.getElementById("owner_name").value = data.owner_name;
+        document.getElementById("phone").value = data.phone;
+        document.getElementById("address").value = data.address;
+      }
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const updates = {
+        pet_name: document.getElementById("pet_name").value,
+        owner_name: document.getElementById("owner_name").value,
+        phone: document.getElementById("phone").value,
+        address: document.getElementById("address").value,
+        updated_at: new Date().toISOString()
+      };
+      await client.from("pets").update(updates).eq("id", id);
+      alert("Dane zostały zapisane!");
+    });
+  </script>
 </body>
 </html>
