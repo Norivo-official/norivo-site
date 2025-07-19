@@ -1,44 +1,62 @@
-
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil Pupila</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+            text-align: center;
+        }
+        .pet-photo {
+            width: 100%;
+            max-width: 250px;
+            height: auto;
+            border-radius: 15px;
+            margin-bottom: 15px;
+        }
+        h1 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 1.2em;
+            margin: 6px 0;
+        }
+    </style>
 </head>
 <body>
-    <div class="pet-profile">
-        <img id="pet-photo" src="" alt="Zdjęcie pupila" style="max-width: 100%; border-radius: 1rem; margin-bottom: 1rem;" />
-        <h2 id="pet-name">Imię pupila</h2>
-        <p><strong>Właściciel:</strong> <span id="owner-name"></span></p>
-        <p><strong>Telefon:</strong> <span id="phone"></span></p>
-        <p><strong>Adres:</strong> <span id="address"></span></p>
-    </div>
-
+    <div id="profile"></div>
     <script>
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get("id");
-
-    fetch("https://xqlxotxeuadglvgdqral.supabase.co/rest/v1/pets?id=eq." + id, {
-        headers: {
-            apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxbHhvdHhldWFkZ2x2Z2RxcmFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDM5NTUsImV4cCI6MjA2ODQ3OTk1NX0.a7mW1MQtr2dWL4_pgflGNpp5xVRc8Th7B0L6iiiFghw",
-            "Content-Type": "application/json"
-        }
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.length > 0) {
+        async function loadProfile() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get("id");
+            const res = await fetch("https://xqlxotxeuadglvgdqral.supabase.co/rest/v1/pets?id=eq." + id, {
+                headers: {
+                    apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxbHhvdHhldWFkZ2x2Z2RxcmFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDM5NTUsImV4cCI6MjA2ODQ3OTk1NX0.a7mW1MQtr2dWL4_pgflGNpp5xVRc8Th7B0L6iiiFghw"
+                }
+            });
+            const data = await res.json();
             const pet = data[0];
-            document.getElementById("pet-name").textContent = pet.pet_name;
-            document.getElementById("owner-name").textContent = pet.owner_name;
-            document.getElementById("phone").textContent = pet.phone;
-            document.getElementById("address").textContent = pet.address;
-            if (pet.photo_url) {
-                document.getElementById("pet-photo").src = pet.photo_url;
+            const container = document.getElementById("profile");
+
+            if (pet) {
+                container.innerHTML = `
+                    ${pet.photo_url ? `<img src="${pet.photo_url}" class="pet-photo">` : ""}
+                    <h1>${pet.pet_name}</h1>
+                    <p><strong>Właściciel:</strong> ${pet.owner_name}</p>
+                    <p><strong>Telefon:</strong> <a href="tel:${pet.phone}">${pet.phone}</a></p>
+                    <p><strong>Adres:</strong> ${pet.address}</p>
+                `;
+            } else {
+                container.innerHTML = "<p>Nie znaleziono profilu.</p>";
             }
-        } else {
-            document.body.innerHTML = "<p>Nie znaleziono profilu.</p>";
         }
-    });
+        loadProfile();
     </script>
 </body>
 </html>
