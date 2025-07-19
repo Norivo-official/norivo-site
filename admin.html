@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Panel administratora Norivo</title>
+    <style>
+        body { font-family: sans-serif; padding: 2rem; max-width: 600px; margin: auto; }
+        input, textarea, button { display: block; width: 100%; margin: 0.5rem 0; padding: 0.5rem; font-size: 1rem; }
+        .section { margin: 2rem 0; }
+        #login-section { text-align: center; }
+        #panel-section { display: none; }
+    </style>
+</head>
+<body>
+    <div id="login-section">
+        <h2>Logowanie do panelu Norivo</h2>
+        <input type="password" id="password" placeholder="Podaj hasło" />
+        <button onclick="checkLogin()">Zaloguj</button>
+        <p id="login-error" style="color:red; display:none;">Błędne hasło</p>
+    </div>
+
+    <div id="panel-section">
+        <h2>Panel administratora Norivo</h2>
+
+        <div class="section">
+            <h3>Sekcja Hero</h3>
+            <textarea id="hero-text" placeholder="Tekst hero"></textarea>
+        </div>
+
+        <div class="section">
+            <h3>Sekcja Dlaczego Norivo?</h3>
+            <textarea id="features-text" placeholder="Opis cech"></textarea>
+        </div>
+
+        <div class="section">
+            <h3>Sekcja Produkty</h3>
+            <textarea id="products-text" placeholder="Opis produktów"></textarea>
+        </div>
+
+        <div class="section">
+            <h3>Stopka</h3>
+            <textarea id="footer-text" placeholder="Treść stopki"></textarea>
+        </div>
+
+        <div class="section">
+            <h3>Logo (upload)</h3>
+            <input type="file" id="logo-upload" />
+        </div>
+
+        <button onclick="saveChanges()">Zapisz zmiany</button>
+        <p id="save-info" style="color:green; display:none;">Zapisano!</p>
+    </div>
+
+    <script>
+        const correctPassword = "norivo123";
+
+        function checkLogin() {
+            const input = document.getElementById("password").value;
+            if (input === correctPassword) {
+                document.getElementById("login-section").style.display = "none";
+                document.getElementById("panel-section").style.display = "block";
+            } else {
+                document.getElementById("login-error").style.display = "block";
+            }
+        }
+
+        function saveChanges() {
+            // Tu będzie zapis do Supabase - tymczasowo tylko symulacja
+            document.getElementById("save-info").style.display = "block";
+            setTimeout(() => {
+                document.getElementById("save-info").style.display = "none";
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
