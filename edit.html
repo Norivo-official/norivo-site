@@ -18,11 +18,13 @@
     <button type="submit">Zapisz</button>
   </form>
   <p><a href="index.html">⬅️ Wróć na stronę główną</a></p>
+  <div id="status" style="color: red; margin-top: 1em;"></div>
 
   <script>
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id");
     const form = document.getElementById("editForm");
+    const statusDiv = document.getElementById("status");
 
     let currentPhotoUrl = "";
 
@@ -42,19 +44,27 @@
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+      statusDiv.innerText = "Zapisywanie...";
 
       let photo_url = currentPhotoUrl;
       const file = document.getElementById("photo").files[0];
       if (file) {
         const fileName = `${id}_${file.name}`;
+        console.log("Próba przesłania pliku:", fileName);
         const { data, error } = await client.storage.from("photos").upload(fileName, file, {
           cacheControl: '3600',
           upsert: true
         });
-        if (!error) {
-          const { data: urlData } = client.storage.from("photos").getPublicUrl(fileName);
-          photo_url = urlData.publicUrl;
+
+        if (error) {
+          console.error("Błąd przesyłania pliku:", error);
+          statusDiv.innerText = "Błąd podczas przesyłania pliku: " + error.message;
+          return;
         }
+
+        const { data: urlData } = client.storage.from("photos").getPublicUrl(fileName);
+        photo_url = urlData.publicUrl;
+        console.log("URL zdjęcia:", photo_url);
       }
 
       const updates = {
@@ -66,8 +76,14 @@
         updated_at: new Date().toISOString()
       };
 
-      await client.from("pets").update(updates).eq("id", id);
-      alert("Dane zostały zapisane!");
+      const { error: updateError } = await client.from("pets").update(updates).eq("id", id);
+      if (updateError) {
+        console.error("Błąd zapisu danych:", updateError);
+        statusDiv.innerText = "Błąd zapisu danych: " + updateError.message;
+        return;
+      }
+
+      statusDiv.innerText = "Dane zostały zapisane!";
       location.reload();
     });
   </script>
