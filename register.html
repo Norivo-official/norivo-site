@@ -1,41 +1,43 @@
-
 <!DOCTYPE html>
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <title>Rejestracja</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rejestracja - Norivo</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
   <h1>Rejestracja</h1>
   <form id="register-form">
     <label for="email">Email:</label><br />
-    <input type="email" id="email" name="email" required /><br />
+    <input type="email" id="email" name="email" required /><br /><br />
     <label for="password">Hasło:</label><br />
-    <input type="password" id="password" name="password" required /><br />
-    <button type="submit">Zarejestruj się</button>
+    <input type="password" id="password" name="password" required /><br /><br />
+    <button type="submit">Zarejestruj</button>
   </form>
-  <p id="status"></p>
+  <p id="message"></p>
 
   <script>
-    const supabase = supabase.createClient(
-      'https://xqlxotxeuadglvgdqral.supabase.co',
-      'public-anon-key'
-    );
+    const SUPABASE_URL = "https://xqlxotxeuadglvgdqral.supabase.co";
+    const SUPABASE_ANON_KEY = "YOUR_PUBLIC_ANON_KEY_HERE";
 
-    document.getElementById("register-form").addEventListener("submit", async (e) => {
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    document.getElementById("register-form").addEventListener("submit", async function(e) {
       e.preventDefault();
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
+
       const { data, error } = await supabase.auth.signUp({
         email,
-        password,
+        password
       });
-      const status = document.getElementById("status");
+
+      const messageElement = document.getElementById("message");
       if (error) {
-        status.innerText = "Błąd: " + error.message;
+        messageElement.textContent = "Błąd: " + error.message;
       } else {
-        status.innerText = "Sprawdź skrzynkę mailową i potwierdź rejestrację.";
+        messageElement.textContent = "Wysłano link aktywacyjny na podany adres e-mail.";
       }
     });
   </script>
