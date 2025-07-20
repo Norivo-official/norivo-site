@@ -4,14 +4,40 @@
 <head>
   <meta charset="UTF-8" />
   <title>Rejestracja</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
   <h1>Rejestracja</h1>
   <form id="register-form">
-    <label>Email: <input type="email" id="email" required /></label><br />
-    <label>Hasło: <input type="password" id="password" required /></label><br />
+    <label for="email">Email:</label><br />
+    <input type="email" id="email" name="email" required /><br />
+    <label for="password">Hasło:</label><br />
+    <input type="password" id="password" name="password" required /><br />
     <button type="submit">Zarejestruj się</button>
   </form>
-  <script type="module" src="register.js"></script>
+  <p id="status"></p>
+
+  <script>
+    const supabase = supabase.createClient(
+      'https://xqlxotxeuadglvgdqral.supabase.co',
+      'public-anon-key'
+    );
+
+    document.getElementById("register-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+      const status = document.getElementById("status");
+      if (error) {
+        status.innerText = "Błąd: " + error.message;
+      } else {
+        status.innerText = "Sprawdź skrzynkę mailową i potwierdź rejestrację.";
+      }
+    });
+  </script>
 </body>
 </html>
