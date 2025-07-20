@@ -1,19 +1,63 @@
 <!DOCTYPE html>
-<html>
+<html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <title>Logowanie - Norivo</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <script src="supabase.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Logowanie</title>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    const SUPABASE_URL = "https://xqlboxtceuadglvqdgral.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxbHhvdHhldWFkZ2x2Z2RxcmFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDM5NTUsImV4cCI6MjA2ODQ3OTk1NX0.a7mW1MQtr2dWL4_pgflGNpp5xVRc8Th7B0L6iiiFghw";
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("login-form");
+      const message = document.getElementById("message");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        message.textContent = "";
+
+        const loginOrEmail = document.getElementById("loginOrEmail").value.trim();
+        const password = document.getElementById("password").value;
+
+        // Spróbuj pobrać użytkownika po loginie z tabeli users
+        const { data: userData, error: userError } = await supabase
+          .from("users")
+          .select("email")
+          .eq("login", loginOrEmail)
+          .single();
+
+        const emailToUse = userData?.email || loginOrEmail;
+
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: emailToUse,
+          password: password,
+        });
+
+        if (error) {
+          message.textContent = `❌ Błąd logowania: ${error.message}`;
+        } else {
+          message.textContent = "✅ Zalogowano pomyślnie!";
+          window.location.href = "dashboard.html"; // lub inna strona po zalogowaniu
+        }
+      });
+    });
+  </script>
 </head>
 <body>
-  <h2>Zaloguj się</h2>
+  <h2>Logowanie</h2>
   <form id="login-form">
-    <input type="email" id="email" placeholder="E-mail" required><br>
-    <input type="password" id="password" placeholder="Hasło" required><br>
+    <label for="loginOrEmail">Login lub Email:</label><br />
+    <input type="text" id="loginOrEmail" required /><br /><br />
+    
+    <label for="password">Hasło:</label><br />
+    <input type="password" id="password" required /><br /><br />
+    
     <button type="submit">Zaloguj się</button>
   </form>
   <p id="message"></p>
-  <script src="auth.js"></script>
 </body>
 </html>
