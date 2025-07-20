@@ -4,11 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rejestracja - Norivo</title>
-  <script type="module" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"></script>
 </head>
 <body>
   <h1>Rejestracja</h1>
-  <form id="register-form">
+  <form id="register-form" method="post" action="#">
     <label for="login">Login:</label><br />
     <input type="text" id="login" name="login" required /><br /><br />
 
@@ -20,32 +20,26 @@
 
     <button type="submit">Zarejestruj</button>
   </form>
+
   <p id="message"></p>
 
   <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-    const SUPABASE_URL = 'https://xqlxotxeuadglvdgqral.supabase.co'
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxbHhvdHhldWFkZ2x2Z2RxcmFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDM5NTUsImV4cCI6MjA2ODQ3OTk1NX0.a7mW1MQtr2dWL4_pgflGNpp5xVRc8Th7B0L6iiiFghw'
+    // Twoje dane Supabase
+    const SUPABASE_URL = "https://xqloxtxeuadglvqdqral.supabase.co";
+    const SUPABASE_ANON_KEY = "wklej_tutaj_swoj_prawidlowy_anon_key";
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    document.getElementById('register-form').addEventListener('submit', async function (e) {
-      e.preventDefault()
+    document.getElementById("register-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-      const login = document.getElementById('login').value.trim()
-      const email = document.getElementById('email').value.trim()
-      const password = document.getElementById('password').value
+      const login = document.getElementById("login").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const messageElement = document.getElementById("message");
 
-      const messageElement = document.getElementById('message')
-      messageElement.textContent = ''
-
-      if (!login || !email || !password) {
-        messageElement.textContent = 'Wypełnij wszystkie pola.'
-        return
-      }
-
-      // Rejestracja przez e-mail
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -53,17 +47,17 @@
           data: {
             login: login
           },
-          emailRedirectTo: 'https://norivo-official.github.io/norivo-site/login.html'
+          emailRedirectTo: `${window.location.origin}/norivo-site/login.html`
         }
-      })
+      });
 
       if (error) {
-        messageElement.textContent = 'Błąd: ' + error.message
+        messageElement.textContent = "Błąd: " + error.message;
       } else {
-        messageElement.textContent = '✅ Wysłano link aktywacyjny na podany adres e-mail.'
-        document.getElementById('register-form').reset()
+        messageElement.textContent = "✅ Wysłano link aktywacyjny na podany adres e-mail.";
+        document.getElementById("register-form").reset();
       }
-    })
+    });
   </script>
 </body>
 </html>
