@@ -3,12 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Rejestracja - Norivo</title>
-  <script type="module" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"></script>
+  <title>Rejestracja</title>
 </head>
 <body>
-  <h1>Rejestracja</h1>
-  <form id="register-form" method="post" action="#">
+  <h2>Rejestracja</h2>
+  <form id="register-form">
     <label for="login">Login:</label><br />
     <input type="text" id="login" name="login" required /><br /><br />
 
@@ -26,8 +25,7 @@
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-    // Twoje dane Supabase
-    const SUPABASE_URL = "https://xqloxtxeuadglvqdqral.supabase.co";
+    const SUPABASE_URL = "https://xqlxotxeuadglvqdgral.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxbHhvdHhldWFkZ2x2Z2RxcmFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDM5NTUsImV4cCI6MjA2ODQ3OTk1NX0.a7mW1MQtr2dWL4_pgflGNpp5xVRc8Th7B0L6iiiFghw";
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -44,10 +42,8 @@
         email,
         password,
         options: {
-          data: {
-            login: login
-          },
-          emailRedirectTo: `${window.location.origin}/norivo-site/login.html`
+          data: { login },
+          emailRedirectTo: "https://norivo-official.github.io/login.html"
         }
       });
 
